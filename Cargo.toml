@@ -5,6 +5,6 @@ authors = ["TheAdnan <adnankicin92@gmail.com>"]
 
 [dependencies]
 nickel = "*"
-rustc-serialize = "*"
 bson = "*"
+rustc-serialize = "*"
 mongodb = "*"

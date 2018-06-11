@@ -42,11 +42,32 @@ fn main() {
         format!("List of users")
     });
 
-    router.post("/users/new", middleware! { |request, response|
+    router.post("/users/new", middleware! { |request,
+        response|
 
-        format!("Create a new user")
+        let user = request.json_as::<Profile>().unwrap();
 
-      });
+        let name = user.name.to_string();
+        let username = user.username.to_string();
+        let email = user.email.to_string();
+
+        // Connect to the database
+        let client = Client::connect("localhost", 27017).ok().expect("Error establishing connection.");
+
+        // The users collection
+        let coll = client.db("kicin-db").collection("profiles");
+
+        // Insert one user
+        match coll.insert_one(doc! {
+        "name" => name,
+        "username" => username,
+        "email" => email
+        }, None) {
+        Ok(_) => (StatusCode::Ok, "Profile saved!"),
+        Err(e) => return response.send(format!("{}", e))
+        }
+
+    });
 
     server.utilize(router);
     server.listen("127.0.0.1:1992");
